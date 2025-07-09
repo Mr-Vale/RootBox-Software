@@ -39,6 +39,7 @@ mkdir -p "$INSTALL_DIR/old"
 chmod +x "$INSTALL_DIR"/*.py
 
 # Step 7: Set up systemd service for Gunicorn
+
 SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
 
 echo "🛠️ Creating systemd service at $SERVICE_FILE..."
@@ -51,8 +52,9 @@ After=network.target
 [Service]
 User=$USER
 WorkingDirectory=$INSTALL_DIR/web
-Environment="PATH=$INSTALL_DIR/venv/bin"
+Environment=\"PATH=$INSTALL_DIR/venv/bin"
 ExecStart=$INSTALL_DIR/venv/bin/gunicorn -w 2 -b 0.0.0.0:5000 app:app
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -64,6 +66,7 @@ sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable "$SERVICE_NAME"
 sudo systemctl restart "$SERVICE_NAME"
+echo "✅ $SERVICE_NAME service enabled and started."
 
 # Step 9: Enable VNC
 echo "🖥️ Setting up RealVNC..."
