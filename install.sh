@@ -13,7 +13,7 @@ echo "📦 Installing dependencies..."
 sudo apt update
 sudo apt install -y git python3 python3-pip python3-venv python3-dev \
   sane-utils libsane-common libjpeg-dev build-essential \
-  gunicorn realvnc-vnc-server realvnc-vnc-viewer
+  realvnc-vnc-server realvnc-vnc-viewer
 
 # Step 3: Clone repo
 if [ -d "$INSTALL_DIR" ]; then
@@ -25,10 +25,12 @@ fi
 
 # Step 4: Set up Python virtual environment
 cd "$INSTALL_DIR"
-python3 -m venv venv
+if [ ! -d "venv" ]; then
+  python3 -m venv venv
+fi
 source venv/bin/activate
 pip install --upgrade pip
-pip install flask
+pip install flask gunicorn
 
 # Step 5: Create required folders
 mkdir -p "$INSTALL_DIR/logs"
@@ -52,7 +54,7 @@ After=network.target
 [Service]
 User=$USER
 WorkingDirectory=$INSTALL_DIR/web
-Environment=\"PATH=$INSTALL_DIR/venv/bin"
+Environment="PATH=$INSTALL_DIR/venv/bin"
 ExecStart=$INSTALL_DIR/venv/bin/gunicorn -w 2 -b 0.0.0.0:5000 app:app
 Restart=always
 
@@ -62,7 +64,6 @@ EOF
 
 # Step 8: Enable and start Gunicorn service
 echo "🚀 Enabling and starting Gunicorn service..."
-sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable "$SERVICE_NAME"
 sudo systemctl restart "$SERVICE_NAME"
