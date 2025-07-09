@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>RootBox Control</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4">
+  <div class="container">
+    <h2>🌱 RootBox Scanner Controller</h2>
+
+    <p>Status:
+      {% if running %}
+        <span class="text-success fw-bold">Running ✅</span>
+      {% else %}
+        <span class="text-danger fw-bold">Stopped ❌</span>
+      {% endif %}
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="alert alert-info">
+          {% for category, message in messages %}
+            <div>{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <form method="post" action="{{ url_for('index') }}">
+      <table class="table table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Scanner</th>
+            <th>Label</th>
+            <th>Enabled</th>
+            <th>Interval (min)</th>
+            <th>Resolution</th>
+            <th>Device</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for scanner_id, config in scanners.items() %}
+            <tr class="{% if config.device in duplicate_devices and config.device %}table-danger{% endif %}">
+              <td><strong>{{ scanner_id.replace('scanner', 'Scanner ') }}</strong></td>
+              <td><input type="text" name="label_{{ scanner_id }}" value="{{ config.label }}" class="form-control" required></td>
+              <td class="text-center">
+                <input type="checkbox" name="enabled_{{ scanner_id }}" {% if config.enabled %}checked{% endif %}>
+              </td>
+              <td><input type="number" name="interval_{{
+                scanner_id }}" value="{{ config.interval_minutes }}" class="form-control" min="1" required></td>
+              <td>
+                <select name="res_{{ scanner_id }}" class="form-select" required>
+                  {% for value in [600, 300, 150] %}
+                    <option value="{{ value }}" {% if config.resolution == value %}selected{% endif %}>{{ value }} dpi</option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="device_{{ scanner_id }}" class="form-select">
+                  <option value="">-- Select Device --</option>
+                  {% for device in available_devices %}
+                    <option value="{{ device }}" {% if device == config.device %}selected{% endif %}>{{ device }}</option>
+                  {% endfor %}
+                </select>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <button type="submit" class="btn btn-primary">💾 Save Settings</button>
+    </form>
+
+    <div class="mt-4">
+      <form method="post" action="{{ url_for('start') }}" class="d-inline-block me-2">
+        <button type="submit" class="btn btn-success">▶ Start Controller</button>
+      </form>
+      <form method="post" action="{{ url_for('stop') }}" class="d-inline-block">
+        <button type="submit" class="btn btn-danger">⏹ Stop Controller</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

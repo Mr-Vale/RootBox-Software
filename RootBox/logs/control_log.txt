@@ -1,0 +1,33 @@
+[2025-07-10 01:19:35] 🟢 Controller started.
+[2025-07-10 01:19:35] ▶ Running scan for scanner01 (Alex_test_01) at 150dpi
+[2025-07-10 01:19:44] ✅ Scan complete for scanner01
+[2025-07-10 01:19:44] ▶ Running scan for scanner02 (Trial B) at 150dpi
+[2025-07-10 01:20:14] ✅ Scan complete for scanner02
+[2025-07-10 01:20:14] ▶ Running scan for scanner04 (Trial C) at 150dpi
+[2025-07-10 01:20:35] ✅ Scan complete for scanner04
+[2025-07-10 01:20:35] [scanner02] [Image Manager] Moved image to old/: scanner02-Trial B-07-07-2025-2306.png
+[2025-07-10 01:20:35] [scanner01] [Image Manager] Moved image to old/: scanner01-Alex_test_01-08-07-2025-0001.png
+[2025-07-10 01:20:35] [scanner01] [Image Manager] Moved image to old/: scanner01-Alex_test_01-08-07-2025-0004.png
+[2025-07-10 01:20:35] 🧹 Image manager complete.
+[2025-07-10 01:21:05] ⏳ Skipping scanner01 — next scan in 2 min
+[2025-07-10 01:21:05] ⏳ Skipping scanner02 — next scan in 6 min
+[2025-07-10 01:21:05] ⏳ Skipping scanner04 — next scan in 10 min
+[2025-07-10 01:21:05] 🧹 Image manager complete.
+[2025-07-10 01:21:35] ⏳ Skipping scanner01 — next scan in 2 min
+[2025-07-10 01:21:35] ⏳ Skipping scanner02 — next scan in 5 min
+[2025-07-10 01:21:35] ⏳ Skipping scanner04 — next scan in 9 min
+[2025-07-10 01:21:35] 🧹 Image manager complete.
+[2025-07-10 01:22:05] ⏳ Skipping scanner01 — next scan in 1 min
+[2025-07-10 01:22:05] ⏳ Skipping scanner02 — next scan in 5 min
+[2025-07-10 01:22:05] ⏳ Skipping scanner04 — next scan in 9 min
+[2025-07-10 01:22:05] 🧹 Image manager complete.
+[2025-07-10 01:22:35] ⏳ Skipping scanner01 — next scan in 1 min
+[2025-07-10 01:22:35] ⏳ Skipping scanner02 — next scan in 4 min
+[2025-07-10 01:22:35] ⏳ Skipping scanner04 — next scan in 8 min
+[2025-07-10 01:22:35] 🧹 Image manager complete.
+[2025-07-10 01:23:05] ▶ Running scan for scanner01 (Alex_test_01) at 150dpi
+[2025-07-10 01:23:15] ✅ Scan complete for scanner01
+[2025-07-10 01:23:15] ⏳ Skipping scanner02 — next scan in 3 min
+[2025-07-10 01:23:15] ⏳ Skipping scanner04 — next scan in 8 min
+[2025-07-10 01:23:15] [scanner01] [Image Manager] Moved image to old/: scanner01-Alex_test_01-08-07-2025-0008.png
+[2025-07-10 01:23:15] 🧹 Image manager complete.

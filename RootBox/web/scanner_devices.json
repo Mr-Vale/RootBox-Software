@@ -1,0 +1,6 @@
+{
+  "devices": [
+    "escl:http://localhost:60000",
+    "airscan:e0:Canon LiDE 400 (USB)"
+  ]
+}
