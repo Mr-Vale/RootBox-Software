@@ -1,0 +1,46 @@
+{
+  "scanners": {
+    "scanner01": {
+      "label": "Alex_test_01",
+      "enabled": true,
+      "interval_minutes": 3,
+      "resolution": 150,
+      "device": "escl:http://localhost:60000"
+    },
+    "scanner02": {
+      "label": "Trial B",
+      "enabled": false,
+      "interval_minutes": 60,
+      "resolution": 150,
+      "device": ""
+    },
+    "scanner03": {
+      "label": "Trial B",
+      "enabled": false,
+      "interval_minutes": 60,
+      "resolution": 150,
+      "device": ""
+    },
+    "scanner04": {
+      "label": "Trial C",
+      "enabled": false,
+      "interval_minutes": 60,
+      "resolution": 150,
+      "device": ""
+    },
+    "scanner05": {
+      "label": "Trial C",
+      "enabled": false,
+      "interval_minutes": 60,
+      "resolution": 150,
+      "device": ""
+    },
+    "scanner06": {
+      "label": "Trial D",
+      "enabled": false,
+      "interval_minutes": 60,
+      "resolution": 150,
+      "device": ""
+    }
+  }
+}

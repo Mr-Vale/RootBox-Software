@@ -1,0 +1,16 @@
+[2025-07-10 00:32:50] 🟢 Controller started.
+[2025-07-10 00:32:50] ▶ Running scan for scanner01 (Alex_test_01) at 150dpi
+[2025-07-10 00:32:50] ❌ Scan failed for scanner01: Command '['python3', '/home/Admin/RootBox/01_scan_image.py', 'scanner01']' returned non-zero exit status 1.
+[2025-07-10 00:32:50] 🧹 Image manager complete.
+[2025-07-10 00:33:20] ▶ Running scan for scanner01 (Alex_test_01) at 150dpi
+[2025-07-10 00:33:20] ❌ Scan failed for scanner01: Command '['python3', '/home/Admin/RootBox/01_scan_image.py', 'scanner01']' returned non-zero exit status 1.
+[2025-07-10 00:33:20] 🧹 Image manager complete.
+[2025-07-10 00:33:50] ▶ Running scan for scanner01 (Alex_test_01) at 150dpi
+[2025-07-10 00:33:50] ❌ Scan failed for scanner01: Command '['python3', '/home/Admin/RootBox/01_scan_image.py', 'scanner01']' returned non-zero exit status 1.
+[2025-07-10 00:33:50] 🧹 Image manager complete.
+[2025-07-10 00:34:20] ▶ Running scan for scanner01 (Alex_test_01) at 150dpi
+[2025-07-10 00:34:20] ❌ Scan failed for scanner01: Command '['python3', '/home/Admin/RootBox/01_scan_image.py', 'scanner01']' returned non-zero exit status 1.
+[2025-07-10 00:34:20] 🧹 Image manager complete.
+[2025-07-10 00:34:50] ▶ Running scan for scanner01 (Alex_test_01) at 150dpi
+[2025-07-10 00:34:50] ❌ Scan failed for scanner01: Command '['python3', '/home/Admin/RootBox/01_scan_image.py', 'scanner01']' returned non-zero exit status 1.
+[2025-07-10 00:34:50] 🧹 Image manager complete.
