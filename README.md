@@ -11,9 +11,7 @@ How to Install:
 
 bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/install.sh)
 
-4. Run
-	sudo atp update
-	sudo atp upgrade
+4. Should perform a reboot before using
 
 ---
 
