@@ -73,6 +73,7 @@ After=network.target
 [Service]
 User=$USER
 WorkingDirectory=$INSTALL_DIR
+ExecStartPre=/bin/sleep 30
 ExecStart=/usr/bin/python3 $INSTALL_DIR/03_Scanner_Autodetect.py
 Restart=on-failure
 
