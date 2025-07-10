@@ -74,7 +74,7 @@ After=network.target
 User=$USER
 WorkingDirectory=$INSTALL_DIR
 ExecStartPre=/bin/sleep 30
-ExecStart=/usr/bin/python3 $INSTALL_DIR/03_Scanner_Autodetect.py
+ExecStart=$INSTALL_DIR/venv/bin/python $INSTALL_DIR/03_Scanner_Autodetect.py
 Restart=on-failure
 
 [Install]
