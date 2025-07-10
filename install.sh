@@ -1,6 +1,14 @@
 #!/bin/bash
 
-echo "🔧 RootBox Installation Started"
+print_section() {
+    echo ""
+    echo " =================================================================== "
+    echo " $1"
+    echo " =================================================================== "
+    echo ""
+}
+
+print_section "🔧 RootBox Installation Started"
 
 # Step 1: Set basic variables
 USER_HOME="/home/$USER"
@@ -10,19 +18,25 @@ GUNICORN_SERVICE="rootbox-gunicorn"
 AUTODETECT_SERVICE="rootbox-scanner-autodetect"
 
 # Step 2: Install dependencies
-echo "📦 Installing dependencies..."
+print_section "📦 Installing dependencies..."
 sudo apt update
 sudo apt install -y git python3 python3-pip python3-venv python3-dev \
   sane-utils libsane-common libjpeg-dev build-essential \
   realvnc-vnc-server realvnc-vnc-viewer
 
+echo ""
+echo ""
+
 # Step 3: Clone repo
 if [ -d "$INSTALL_DIR" ]; then
-  echo "📁 RootBox directory already exists, skipping clone."
+  print_section "📁 RootBox directory already exists, skipping clone."
 else
-  echo "⬇️ Cloning RootBox repo..."
+  print_section "⬇️ Cloning RootBox repo..."
   git clone "$REPO_URL" "$INSTALL_DIR"
 fi
+
+echo ""
+echo ""
 
 # Step 4: Set up Python virtual environment
 cd "$INSTALL_DIR"
@@ -44,7 +58,7 @@ chmod +x "$INSTALL_DIR"/*.py
 # Step 7: Set up systemd service for Gunicorn
 GUNICORN_FILE="/etc/systemd/system/$GUNICORN_SERVICE.service"
 
-echo "🛠️ Creating systemd service for Gunicorn..."
+print_section "🛠️ Creating systemd service for Gunicorn..."
 sudo bash -c "cat > $GUNICORN_FILE" <<EOF
 [Unit]
 Description=RootBox Flask App via Gunicorn
@@ -61,10 +75,13 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
+echo ""
+echo ""
+
 # Step 8: Set up systemd service for Scanner Autodetect
 AUTODETECT_FILE="/etc/systemd/system/$AUTODETECT_SERVICE.service"
 
-echo "🛠️ Creating systemd service for Scanner Autodetect..."
+print_section "🛠️ Creating systemd service for Scanner Autodetect..."
 sudo bash -c "cat > $AUTODETECT_FILE" <<EOF
 [Unit]
 Description=RootBox Scanner AutoDetect
@@ -82,7 +99,7 @@ WantedBy=multi-user.target
 EOF
 
 # Step 9: Enable and start services
-echo "🚀 Enabling and starting services..."
+print_section "🚀 Enabling and starting services..."
 sudo systemctl daemon-reload
 sudo systemctl enable "$GUNICORN_SERVICE"
 sudo systemctl restart "$GUNICORN_SERVICE"
@@ -90,8 +107,11 @@ sudo systemctl enable "$AUTODETECT_SERVICE"
 sudo systemctl start "$AUTODETECT_SERVICE"
 echo "✅ Services enabled and running."
 
+echo ""
+echo ""
+
 # Step 10: Enable VNC
-echo "🖥️ Setting up RealVNC..."
+print_section "🖥️ Setting up RealVNC..."
 sudo systemctl enable vncserver-x11-serviced.service
 sudo systemctl start vncserver-x11-serviced.service
 sudo raspi-config nonint do_vnc 0
@@ -100,9 +120,9 @@ echo "✅ VNC Server enabled. Use RealVNC Viewer to connect."
 
 # Step 11: Create desktop shortcut for RootBox Web GUI
 mkdir -p "$USER_HOME/Desktop"
-
 DESKTOP_FILE="$USER_HOME/Desktop/RootBox_GUI.desktop"
-echo "🧭 Creating desktop shortcut at $DESKTOP_FILE..."
+
+print_section "🧭 Creating desktop shortcut at $DESKTOP_FILE..."
 cat <<EOF > "$DESKTOP_FILE"
 [Desktop Entry]
 Name=RootBox GUI
@@ -116,11 +136,15 @@ EOF
 
 chmod +x "$DESKTOP_FILE"
 
+echo ""
+echo ""
+
 # Step 12: Final apt upgrade
-echo "🔄 Running full system upgrade..."
+print_section "🔄 Running full system upgrade..."
 sudo apt upgrade -y
 
 # Step 13: Finished
+echo " =================================================================== "
 echo ""
 echo "        🌱 RootBox Installed 🌱           "
 echo "  --------------------------------------- "
@@ -129,22 +153,25 @@ echo "  🖥️ VNC     → Port 5900					"
 echo "  ✅ Desktop shortcut added 				"
 echo "  ✅ Autodetect service enabled			"
 echo "  ✅ System packages upgraded				"
+echo "     Reboot sugested before use           "
 echo "  --------------------------------------- "
 echo ""
-echo "  ____________________	 "
-echo " /                    \ "
-echo " |    In case of      | "
-echo " |    Frustration     | "
-echo " \____________________/ "
-echo "          !  !          "
-echo "          !  !          "
-echo "          L_ !          "
-echo "         / _)!          "
-echo "        / /__L          "
-echo "  _____/ (____)         "
-echo "         (____)         "
-echo "  _____  (____)         "
-echo "       \_(____)         "
-echo "          !  !          "
-echo "          !  !          "
-echo "          \__/          "
+echo "  If still non-operational try "
+echo "      ____________________     "
+echo "     /                    \    "
+echo "     |       Kenetic      |    "
+echo "     |   Recalibration    |    "
+echo "     |        Tool        |    "
+echo "     \____________________/    "
+echo "              !  !             "
+echo "              !  !             "
+echo "              L_ !             "
+echo "             / _)!             "
+echo "            / /__L             "
+echo "      _____/ (____)            "
+echo "             (____)            "
+echo "      _____  (____)            "
+echo "           \_(____)            "
+echo "              !  !             "
+echo "              !  !             "
+echo "              \__/             "
