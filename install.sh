@@ -77,7 +77,52 @@ sudo raspi-config nonint do_vnc 0
 
 echo "✅ VNC Server enabled. Use RealVNC Viewer to connect."
 
-# Step 10: Finished
-echo "✅ RootBox installed!"
-echo "🌐 Web GUI available at: http://<your-pi-ip>:5000"
-echo "🖥️ Access GUI desktop via VNC on port 5900."
+
+# Step 10: Create desktop shortcut for RootBox Web GUI
+mkdir -p "/home/$USER/Desktop"
+
+DESKTOP_FILE="/home/$USER/Desktop/RootBox_GUI.desktop"
+
+echo "🧭 Creating desktop shortcut at $DESKTOP_FILE..."
+cat <<EOF > "$DESKTOP_FILE"
+[Desktop Entry]
+Name=RootBox GUI
+Comment=Open the RootBox web interface
+Exec=xdg-open http://localhost:5000
+Icon=web-browser
+Terminal=false
+Type=Application
+Categories=Utility;
+EOF
+
+chmod +x "$DESKTOP_FILE"
+
+
+# Step 11: Finished
+echo ""
+echo "        🌱 RootBox Installed 🌱           "
+echo "  --------------------------------------- "
+echo "  🌐 Web GUI → http://localhost:5000		"
+echo "  🖥️ VNC     → Port 5900					"
+echo "  ✅ Desktop shortcut added 				"
+echo "  --------------------------------------- "
+echo ""
+echo "			 ____________________			"
+echo "			/                    \			"
+echo "			|     In case of     |			"
+echo "			|     Frustration    |			"
+echo "			\____________________/			"
+echo "					 !  !					"
+echo "					 !  !					"
+echo "					 L_ !					"
+echo "					/ _)!					"
+echo "				   / /__L					"
+echo "			 _____/ (____)					"
+echo "					(____)					"
+echo "			 _____  (____)					"
+echo "				  \_(____)					"
+echo "					 !  !					"
+echo "					 !  !					"
+echo "					 \__/					"
+
+
