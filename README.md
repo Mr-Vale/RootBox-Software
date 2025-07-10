@@ -4,6 +4,12 @@ RootBox is a Raspberry Pi–based automated root observation system designed to 
 
 ---
 
+one line install of scanner software
+
+bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/install.sh)
+
+---
+
 ## 📦 Features
 
 - Supports **1–6 scanners**, each with independent settings
