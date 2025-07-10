@@ -57,7 +57,6 @@ def main():
         "--format=png",
         f"--resolution={resolution}",
         "--mode", "Color",
-       # "--depth", "8",
         "--batch={}".format(filepath),
         "--batch-start=1",
         "--batch-count=1"

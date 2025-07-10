@@ -88,6 +88,7 @@ try:
                     log(f"✅ Scan complete for {scanner_id}")
                 except subprocess.CalledProcessError as e:
                     log(f"❌ Scan failed for {scanner_id}: {e}")
+
             else:
                 log(f"⏳ Skipping {scanner_id} — next scan in {interval - int(elapsed)} min")
 

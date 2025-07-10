@@ -1,14 +1,14 @@
 {
   "scanners": {
     "scanner01": {
-      "label": "Alex_test_01",
-      "enabled": true,
-      "interval_minutes": 3,
+      "label": "Trial A",
+      "enabled": false,
+      "interval_minutes": 60,
       "resolution": 150,
-      "device": "escl:http://localhost:60000"
+      "device": ""
     },
     "scanner02": {
-      "label": "Trial B",
+      "label": "Trial A",
       "enabled": false,
       "interval_minutes": 60,
       "resolution": 150,
@@ -22,7 +22,7 @@
       "device": ""
     },
     "scanner04": {
-      "label": "Trial C",
+      "label": "Trial B",
       "enabled": false,
       "interval_minutes": 60,
       "resolution": 150,
@@ -36,7 +36,7 @@
       "device": ""
     },
     "scanner06": {
-      "label": "Trial D",
+      "label": "Trial C",
       "enabled": false,
       "interval_minutes": 60,
       "resolution": 150,
