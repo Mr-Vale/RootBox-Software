@@ -112,6 +112,30 @@ def start():
 def stop():
     stop_controller()
     return redirect(url_for('index'))
+    
+@app.route('/manual_scan/<scanner_id>', methods=['POST'])
+def manual_scan(scanner_id):
+    try:
+        result = subprocess.run(
+            ['python3', os.path.join(ROOTBOX_DIR, '01_scan_image.py'), scanner_id],
+            check=True
+        )
+        flash(f"✅ Manual scan for {scanner_id} completed successfully.", "success")
+    except subprocess.CalledProcessError as e:
+        flash(f"❌ Manual scan for {scanner_id} failed: {e}", "danger")
+    return redirect(url_for('index'))
+
+@app.route('/log')
+def view_log():
+    log_path = os.path.join(ROOTBOX_DIR, 'logs', 'control_log.txt')
+    try:
+        with open(log_path, 'r') as f:
+            lines = f.readlines()
+        last_lines = lines[-50:]
+        return ''.join(last_lines)
+    except Exception as e:
+        return f"⚠️ Error reading log file: {e}"
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
