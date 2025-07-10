@@ -6,7 +6,8 @@ echo "🔧 RootBox Installation Started"
 USER_HOME="/home/$USER"
 INSTALL_DIR="$USER_HOME/RootBox"
 REPO_URL="https://github.com/Mr-Vale/RootBox-Software.git"
-SERVICE_NAME="rootbox-gunicorn"
+GUNICORN_SERVICE="rootbox-gunicorn"
+AUTODETECT_SERVICE="rootbox-scanner-autodetect"
 
 # Step 2: Install dependencies
 echo "📦 Installing dependencies..."
@@ -41,12 +42,10 @@ mkdir -p "$INSTALL_DIR/old"
 chmod +x "$INSTALL_DIR"/*.py
 
 # Step 7: Set up systemd service for Gunicorn
+GUNICORN_FILE="/etc/systemd/system/$GUNICORN_SERVICE.service"
 
-SERVICE_FILE="/etc/systemd/system/$SERVICE_NAME.service"
-
-echo "🛠️ Creating systemd service at $SERVICE_FILE..."
-
-sudo bash -c "cat > $SERVICE_FILE" <<EOF
+echo "🛠️ Creating systemd service for Gunicorn..."
+sudo bash -c "cat > $GUNICORN_FILE" <<EOF
 [Unit]
 Description=RootBox Flask App via Gunicorn
 After=network.target
@@ -62,14 +61,35 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-# Step 8: Enable and start Gunicorn service
-echo "🚀 Enabling and starting Gunicorn service..."
-sudo systemctl daemon-reload
-sudo systemctl enable "$SERVICE_NAME"
-sudo systemctl restart "$SERVICE_NAME"
-echo "✅ $SERVICE_NAME service enabled and started."
+# Step 8: Set up systemd service for Scanner Autodetect
+AUTODETECT_FILE="/etc/systemd/system/$AUTODETECT_SERVICE.service"
 
-# Step 9: Enable VNC
+echo "🛠️ Creating systemd service for Scanner Autodetect..."
+sudo bash -c "cat > $AUTODETECT_FILE" <<EOF
+[Unit]
+Description=RootBox Scanner AutoDetect
+After=network.target
+
+[Service]
+User=$USER
+WorkingDirectory=$INSTALL_DIR
+ExecStart=/usr/bin/python3 $INSTALL_DIR/03_Scanner_Autodetect.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Step 9: Enable and start services
+echo "🚀 Enabling and starting services..."
+sudo systemctl daemon-reload
+sudo systemctl enable "$GUNICORN_SERVICE"
+sudo systemctl restart "$GUNICORN_SERVICE"
+sudo systemctl enable "$AUTODETECT_SERVICE"
+sudo systemctl start "$AUTODETECT_SERVICE"
+echo "✅ Services enabled and running."
+
+# Step 10: Enable VNC
 echo "🖥️ Setting up RealVNC..."
 sudo systemctl enable vncserver-x11-serviced.service
 sudo systemctl start vncserver-x11-serviced.service
@@ -77,12 +97,10 @@ sudo raspi-config nonint do_vnc 0
 
 echo "✅ VNC Server enabled. Use RealVNC Viewer to connect."
 
+# Step 11: Create desktop shortcut for RootBox Web GUI
+mkdir -p "$USER_HOME/Desktop"
 
-# Step 10: Create desktop shortcut for RootBox Web GUI
-mkdir -p "/home/$USER/Desktop"
-
-DESKTOP_FILE="/home/$USER/Desktop/RootBox_GUI.desktop"
-
+DESKTOP_FILE="$USER_HOME/Desktop/RootBox_GUI.desktop"
 echo "🧭 Creating desktop shortcut at $DESKTOP_FILE..."
 cat <<EOF > "$DESKTOP_FILE"
 [Desktop Entry]
@@ -97,32 +115,35 @@ EOF
 
 chmod +x "$DESKTOP_FILE"
 
+# Step 12: Final apt upgrade
+echo "🔄 Running full system upgrade..."
+sudo apt upgrade -y
 
-# Step 11: Finished
+# Step 13: Finished
 echo ""
 echo "        🌱 RootBox Installed 🌱           "
 echo "  --------------------------------------- "
 echo "  🌐 Web GUI → http://localhost:5000		"
 echo "  🖥️ VNC     → Port 5900					"
 echo "  ✅ Desktop shortcut added 				"
+echo "  ✅ Autodetect service enabled			"
+echo "  ✅ System packages upgraded				"
 echo "  --------------------------------------- "
 echo ""
-echo "			 ____________________			"
-echo "			/                    \			"
-echo "			|     In case of     |			"
-echo "			|     Frustration    |			"
-echo "			\____________________/			"
-echo "					 !  !					"
-echo "					 !  !					"
-echo "					 L_ !					"
-echo "					/ _)!					"
-echo "				   / /__L					"
-echo "			 _____/ (____)					"
-echo "					(____)					"
-echo "			 _____  (____)					"
-echo "				  \_(____)					"
-echo "					 !  !					"
-echo "					 !  !					"
-echo "					 \__/					"
-
-
+echo "  ____________________	 "
+echo " /                    \ "
+echo " |    In case of      | "
+echo " |    Frustration     | "
+echo " \____________________/ "
+echo "          !  !          "
+echo "          !  !          "
+echo "          L_ !          "
+echo "         / _)!          "
+echo "        / /__L          "
+echo "  _____/ (____)         "
+echo "         (____)         "
+echo "  _____  (____)         "
+echo "       \_(____)         "
+echo "          !  !          "
+echo "          !  !          "
+echo "          \__/          "
