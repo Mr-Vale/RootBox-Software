@@ -3,7 +3,7 @@
 print_section() {
     echo ""
     echo " =================================================================== "
-    echo " $1"
+    echo "      $1"
     echo " =================================================================== "
     echo ""
 }
@@ -24,9 +24,6 @@ sudo apt install -y git python3 python3-pip python3-venv python3-dev \
   sane-utils libsane-common libjpeg-dev build-essential \
   realvnc-vnc-server realvnc-vnc-viewer
 
-echo ""
-echo ""
-
 # Step 3: Clone repo
 if [ -d "$INSTALL_DIR" ]; then
   print_section "📁 RootBox directory already exists, skipping clone."
@@ -35,10 +32,8 @@ else
   git clone "$REPO_URL" "$INSTALL_DIR"
 fi
 
-echo ""
-echo ""
-
 # Step 4: Set up Python virtual environment
+print_section "Setting Up Python Virtual Environment..."
 cd "$INSTALL_DIR"
 if [ ! -d "venv" ]; then
   python3 -m venv venv
@@ -75,8 +70,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-echo ""
-echo ""
+echo "✅ $GUNICORN_SERVICE.service created"
 
 # Step 8: Set up systemd service for Scanner Autodetect
 AUTODETECT_FILE="/etc/systemd/system/$AUTODETECT_SERVICE.service"
@@ -98,6 +92,8 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
+echo "✅ $AUTODETECT_SERVICE.service created"
+
 # Step 9: Enable and start services
 print_section "🚀 Enabling and starting services..."
 sudo systemctl daemon-reload
@@ -106,9 +102,6 @@ sudo systemctl restart "$GUNICORN_SERVICE"
 sudo systemctl enable "$AUTODETECT_SERVICE"
 sudo systemctl start "$AUTODETECT_SERVICE"
 echo "✅ Services enabled and running."
-
-echo ""
-echo ""
 
 # Step 10: Enable VNC
 print_section "🖥️ Setting up RealVNC..."
@@ -136,14 +129,14 @@ EOF
 
 chmod +x "$DESKTOP_FILE"
 
-echo ""
-echo ""
+echo "✅ RootBox_GUI.desktop created"
 
 # Step 12: Final apt upgrade
 print_section "🔄 Running full system upgrade..."
 sudo apt upgrade -y
 
 # Step 13: Finished
+echo ""
 echo " =================================================================== "
 echo ""
 echo "        🌱 RootBox Installed 🌱           "
