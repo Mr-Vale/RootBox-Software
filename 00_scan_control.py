@@ -50,6 +50,13 @@ def load_settings():
         log(f"⚠️ Failed to load settings: {e}")
         return {}
 
+def save_settings(settings):
+    try:
+        with open(SETTINGS_PATH, 'w') as f:
+            json.dump(settings, f, indent=2)
+    except Exception as e:
+        log(f"⚠️ Failed to save settings: {e}")
+
 # Rotate log at startup
 rotate_log()
 
@@ -84,7 +91,9 @@ try:
 
                 try:
                     subprocess.run(["python3", SCAN_IMAGE_SCRIPT, scanner_id], check=True)
-                    last_run_times[scanner_id] = datetime.now()
+                    last_run_times[scanner_id] = now
+                    settings["scanners"][scanner_id]["last_scan"] = now.isoformat()
+                    save_settings(settings)
                     log(f"✅ Scan complete for {scanner_id}")
                 except subprocess.CalledProcessError as e:
                     log(f"❌ Scan failed for {scanner_id}: {e}")

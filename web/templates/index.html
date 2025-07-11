@@ -38,6 +38,7 @@
             <th>Label</th>
             <th>Enabled</th>
             <th>Interval (min)</th>
+            <th>Next Scan</th>
             <th>Resolution</th>
             <th>Device</th>
             <th>Action</th>
@@ -52,6 +53,13 @@
               <input type="checkbox" name="enabled_{{ scanner_id }}" {% if config.enabled %}checked{% endif %}>
             </td>
             <td><input type="number" name="interval_{{ scanner_id }}" value="{{ config.interval_minutes }}" class="form-control" min="1" required></td>
+            <td>
+              {% if countdowns[scanner_id] is not none %}
+                <span class="countdown" data-minutes="{{ countdowns[scanner_id] }}">--:--</span>
+              {% else %}
+                <span class="text-muted">N/A</span>
+              {% endif %}
+            </td>
             <td>
               <select name="res_{{ scanner_id }}" class="form-select" required>
                 {% for value in [600, 300, 150] %}
@@ -102,7 +110,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
   <!-- JavaScript -->
@@ -114,8 +121,27 @@
       }).then(() => location.reload());
     }
 
-    let logInterval = null;
+    function updateCountdowns() {
+      document.querySelectorAll('.countdown').forEach(el => {
+        let mins = parseFloat(el.dataset.minutes);
+        if (isNaN(mins)) return;
 
+        if (mins <= 0) {
+          el.textContent = "00:00";
+        } else {
+          let h = Math.floor(mins / 60);
+          let m = Math.floor(mins % 60);
+          el.textContent = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+          el.dataset.minutes = (mins - 0.5); // update every 30s
+        }
+      });
+    }
+
+    updateCountdowns();
+    setInterval(updateCountdowns, 30000); // 30s refresh
+
+    // Log auto-refresh
+    let logInterval = null;
     function loadLog() {
       fetch('/log')
         .then(res => res.text())
@@ -125,12 +151,10 @@
     }
 
     const logCollapse = document.getElementById('collapseLog');
-
     logCollapse.addEventListener('shown.bs.collapse', function () {
       loadLog();
-      logInterval = setInterval(loadLog, 30000); // 30 sec refresh
+      logInterval = setInterval(loadLog, 30000);
     });
-
     logCollapse.addEventListener('hidden.bs.collapse', function () {
       clearInterval(logInterval);
     });

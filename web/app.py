@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import signal
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = 'rootbox-secret'  # Replace with secure key in production
@@ -85,13 +86,35 @@ def index():
         flash("Settings saved successfully.", "success")
         return redirect(url_for('index'))
 
-    # Precompute device duplicates
+    # 🔽 Calculate estimated time remaining per scanner
+    countdowns = {}
+    now = datetime.now()
+    for scanner_id, config in scanners.items():
+        if config.get("enabled") and "last_scan" in config:
+            try:
+                last_scan = datetime.fromisoformat(config["last_scan"])
+                interval = config.get("interval_minutes", 60)
+                next_scan = last_scan + timedelta(minutes=interval)
+                remaining_td = next_scan - now
+                if remaining_td.total_seconds() > 0:
+                    total_minutes = int(remaining_td.total_seconds() // 60)
+                    hours = total_minutes // 60
+                    minutes = total_minutes % 60
+                    countdowns[scanner_id] = f"{hours:02}:{minutes:02}"
+                else:
+                    countdowns[scanner_id] = "00:00"
+
+            except Exception:
+                countdowns[scanner_id] = None
+        else:
+            countdowns[scanner_id] = None
+
+    # 🔽 Detect duplicates
     device_count = {}
     for config in scanners.values():
         device = config.get('device')
         if device:
             device_count[device] = device_count.get(device, 0) + 1
-
     duplicate_devices = {dev for dev, count in device_count.items() if count > 1}
 
     running = is_controller_running()
@@ -100,7 +123,8 @@ def index():
         scanners=scanners,
         available_devices=available_devices,
         running=running,
-        duplicate_devices=duplicate_devices
+        duplicate_devices=duplicate_devices,
+        countdowns=countdowns
     )
 
 @app.route('/start', methods=['POST'])
@@ -110,7 +134,14 @@ def start():
 
 @app.route('/stop', methods=['POST'])
 def stop():
-    stop_controller()
+    stopped = stop_controller()
+
+    if stopped:
+        settings = load_json(SETTINGS_PATH)
+        for config in settings.get('scanners', {}).values():
+            config.pop("last_scan", None)  # remove the timer
+        save_json(SETTINGS_PATH, settings)
+
     return redirect(url_for('index'))
     
 @app.route('/manual_scan/<scanner_id>', methods=['POST'])
