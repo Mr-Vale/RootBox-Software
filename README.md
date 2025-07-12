@@ -14,7 +14,7 @@ bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/i
 4. Should perform a reboot before using
 
 ---
-Service Management Commands:
+## Service Management Commands:
 
 Check all running services:
   sudo systemctl status
