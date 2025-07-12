@@ -116,10 +116,4 @@ sudo systemctl restart rootbox-scanner-autodetect.service
 │   └── scanner01/..scanner06/  # Output image folders
 └── controller.pid              # Tracks control script PID
 ```
-
----
-
-## 💬 Questions?
-
-- Need help ? - sorry I am not avaiable
 ---
