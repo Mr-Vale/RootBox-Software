@@ -19,18 +19,21 @@ Check all running services
 sudo systemctl status
 
 Check custom web hosting service
+
 sudo systemctl status rootbox-gunicorn.service
 
 Restart custom web hosting service
+
 sudo systemctl restart rootbox-gunicorn.service
 
 Check custom scanner detect service
+
 sudo systemctl status rootbox-scanner-autodetect.service
 
 Restart custom scanner detect service
+
 sudo systemctl restart rootbox-scanner-autodetect.service
 
----
 
 ## 📦 Features
 
