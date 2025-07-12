@@ -10,19 +10,19 @@
       height: 1rem;
       margin-left: 8px;
     }
+	
+	body {
+    background-color: #e9ecef; /* Bootstrap’s secondary grey */
+  /*  background-color: #f8f9fa; /* Bootstrap’s light grey */ */
+    }
   </style>
+
 </head>
 <body class="p-4">
   <div class="container">
-    <h2>🌱 RootBox Scanner Controller</h2>
+    
+	<h2 class="fw-bold" style="font-size: 2.5rem;">🌱 RootBox Scanner Controller</h2>
 
-    <p>Status:
-      {% if running %}
-        <span class="text-success fw-bold">Running ✅</span>
-      {% else %}
-        <span class="text-danger fw-bold">Stopped ❌</span>
-      {% endif %}
-    </p>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -36,71 +36,87 @@
 
     <!-- Main Settings Form -->
     <form method="post" action="{{ url_for('index') }}">
-      <table class="table table-bordered align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Scanner</th>
-            <th>Label</th>
-            <th>Enabled</th>
-            <th>Interval (min)</th>
-            <th>Resolution</th>
-            <th>Device</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for scanner_id, config in scanners.items() %}
-          <tr class="{% if config.device in duplicate_devices and config.device %}table-danger{% endif %}">
-            <td><strong>{{ scanner_id.replace('scanner', 'Scanner ') }}</strong></td>
-            <td><input type="text" name="label_{{ scanner_id }}" value="{{ config.label }}" class="form-control" required></td>
-            <td class="text-center">
-              <input type="checkbox" name="enabled_{{ scanner_id }}" {% if config.enabled %}checked{% endif %}>
-            </td>
-            <td><input type="number" name="interval_{{ scanner_id }}" value="{{ config.interval_minutes }}" class="form-control" min="1" required></td>
-            <td>
-              <select name="res_{{ scanner_id }}" class="form-select" required>
-                {% for value in [600, 300, 150] %}
-                  <option value="{{ value }}" {% if config.resolution == value %}selected{% endif %}>{{ value }} dpi</option>
-                {% endfor %}
-              </select>
-            </td>
-            <td>
-              <select name="device_{{ scanner_id }}" class="form-select">
-                <option value="">-- Select Device --</option>
-                {% for device in available_devices %}
-                  <option value="{{ device }}" {% if device == config.device %}selected{% endif %}>{{ device }}</option>
-                {% endfor %}
-              </select>
-            </td>
-            <td>
-              <button type="button" class="btn btn-sm btn-primary" onclick="manualScan('{{ scanner_id }}')">Manual Scan</button>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <button type="submit" class="btn btn-primary">💾 Save Settings</button>
+      <!-- Table & Save Button Card -->
+      <div class="card shadow mb-4">
+        <div class="card-body p-3">
+          <table class="table table-bordered align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Scanner</th>
+                <th>Label</th>
+                <th>Enabled</th>
+                <th>Interval (min)</th>
+                <th>Resolution</th>
+                <th>Device</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for scanner_id, config in scanners.items() %}
+              <tr class="{% if config.device in duplicate_devices and config.device %}table-danger{% endif %}">
+                <td><strong>{{ scanner_id.replace('scanner', 'Scanner ') }}</strong></td>
+                <td><input type="text" name="label_{{ scanner_id }}" value="{{ config.label }}" class="form-control" required></td>
+                <td class="text-center">
+                  <input type="checkbox" name="enabled_{{ scanner_id }}" {% if config.enabled %}checked{% endif %}>
+                </td>
+                <td><input type="number" name="interval_{{ scanner_id }}" value="{{ config.interval_minutes }}" class="form-control" min="1" required></td>
+                <td>
+                  <select name="res_{{ scanner_id }}" class="form-select" required>
+                    {% for value in [600, 300, 150] %}
+                      <option value="{{ value }}" {% if config.resolution == value %}selected{% endif %}>{{ value }} dpi</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <select name="device_{{ scanner_id }}" class="form-select">
+                    <option value="">-- Select Device --</option>
+                    {% for device in available_devices %}
+                      <option value="{{ device }}" {% if device == config.device %}selected{% endif %}>{{ device }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-primary" onclick="manualScan('{{ scanner_id }}')">Manual Scan</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer text-end">
+          <button type="submit" class="btn btn-primary">💾 Save Settings</button>
+        </div>
+      </div>
     </form>
 
-    <!-- Start/Stop Controls -->
-    <div class="mt-4">
-	  <form method="post" action="{{ url_for('start') }}" class="d-inline-block me-2" id="startForm">
-	    <button type="submit" class="btn btn-success" id="startButton">
-		  <span id="startSpinner" class="spinner-border spinner-border-sm me-1 d-none"></span>
-		  ▶ Start Controller
-		</button>
-	  </form>
-	  
-	  
+    <!-- Status + Controls Card -->
+    <div class="card shadow mb-4">
+      <div class="card-body d-flex justify-content-between align-items-center" style="height: 3.5rem;">
+        <div>
+          <strong>Status: </strong>
+          {% if running %}
+            <span class="text-success fw-bold">Running ✅</span>
+          {% else %}
+            <span class="text-danger fw-bold">Stopped ❌</span>
+          {% endif %}
+        </div>
+        <div>
+          <form method="post" action="{{ url_for('start') }}" class="d-inline-block me-2" id="startForm">
+            <button type="submit" class="btn btn-success" id="startButton">
+              <span id="startSpinner" class="spinner-border spinner-border-sm me-1 d-none"></span>
+              ▶ Start Controller
+            </button>
+          </form>
 
-      <form method="post" action="{{ url_for('stop') }}" class="d-inline-block">
-        <button type="submit" class="btn btn-danger">⏹ Stop Controller</button>
-      </form>
+          <form method="post" action="{{ url_for('stop') }}" class="d-inline-block">
+            <button type="submit" class="btn btn-danger">⏹ Stop Controller</button>
+          </form>
+        </div>
+      </div>
     </div>
 
     <!-- Log Viewer -->
-    <div class="accordion mt-5" id="logAccordion">
+    <div class="accordion shadow mt-5" id="logAccordion">
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingLogs">
           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#logPanel" aria-expanded="false" aria-controls="logPanel">
@@ -115,7 +131,7 @@
       </div>
     </div>
   </div>
-
+  
   <!-- Scripts -->
   <script>
     function manualScan(scannerId) {
@@ -139,21 +155,21 @@
     const startSpinner = document.getElementById("startSpinner");
 
     startForm.addEventListener("submit", function (e) {
-	  e.preventDefault(); // Prevent immediate form submit
-	  startButton.disabled = true;
-	  startSpinner.classList.remove("d-none");
-	
-	  // Send the form manually
-	  fetch(startForm.action, {
-	    method: 'POST',
-	    headers: {
-		  'Content-Type': 'application/x-www-form-urlencoded'
-	    },
-	  }).then(() => {
-	    setTimeout(() => {
-		  window.location.reload(); // ← force full refresh
-	    }, 1500); // enough time for backend to update PID
-	  });
+      e.preventDefault(); // Prevent immediate form submit
+      startButton.disabled = true;
+      startSpinner.classList.remove("d-none");
+
+      // Send the form manually
+      fetch(startForm.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+      }).then(() => {
+        setTimeout(() => {
+          window.location.reload(); // ← force full refresh
+        }, 1500); // enough time for backend to update PID
+      });
     });
 
     function loadLogs() {
