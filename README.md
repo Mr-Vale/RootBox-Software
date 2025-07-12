@@ -21,11 +21,20 @@ RootBox is a Raspberry Pi–based automated root observation system designed to 
 - Uses simple **JSON** config files — no database or internet required
 - Future expansion: automatic image upload, root tracking via AI
 
----
 
 ## 🖥️ Accessing the Web GUI
 
-Once installed:
+Once installed either:
+
+- Open a browser and navigate to:
+  ```
+  http://<raspberry pi ip address>:5000
+  ```
+OR
+
+- Use Real VNC viewer and log into <Raspberry Pi IP> Port 5900				
+
+OR
 
 - Open any browser on the Raspberry Pi
 - Navigate to:  
@@ -47,7 +56,7 @@ The installer automatically creates a shortcut on the Raspberry Pi desktop:
 
 This makes it easy to access the GUI without typing anything.
 
----
+
 
 ## ⚙️ How to Install
 
@@ -61,7 +70,7 @@ This makes it easy to access the GUI without typing anything.
 4. Wait for installation to complete
 5. Reboot the Pi before first use
 
----
+
 
 ## 🔄 Service Management Commands
 
@@ -90,7 +99,7 @@ Restart Scanner Auto-Detect service:
 sudo systemctl restart rootbox-scanner-autodetect.service
 ```
 
----
+
 
 ## 🧰 Project Structure
 
@@ -118,6 +127,5 @@ sudo systemctl restart rootbox-scanner-autodetect.service
 
 ## 💬 Questions?
 
-- Need help? 
-- sorry I am not avaiable
+- Need help ? - sorry I am not avaiable
 ---
