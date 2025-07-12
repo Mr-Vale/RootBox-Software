@@ -2,6 +2,21 @@
 
 RootBox is a Raspberry Pi–based automated root observation system designed to scan and monitor plant root growth over time. It supports multiple USB flatbed scanners, provides a Flask-based web interface for control, and logs all activity for later analysis.
 
+## 📦 Features
+
+- Supports **1–6 scanners**, each with independent settings
+- Scans roots on a schedule with user-defined **intervals and resolutions**
+- Stores images with timestamped filenames in per-scanner folders
+- Web GUI to:
+  - Enable/disable scanners
+  - Assign labels
+  - Set scan frequency and resolution
+  - Choose connected scanner devices
+  - Start/stop the control service
+- Automatically rotates log files and manages local disk space
+- JSON-based configuration — no database required
+- Future expansion: image upload to server, AI root tracking
+
 ## How to Install:
 
 1. Install full Desktop Raspberry PI OS (ensure SSH is enabled and connected to the internet)
@@ -34,22 +49,6 @@ Restart scanner autodetect service:
 ```
 sudo systemctl restart rootbox-scanner-autodetect.service
 ```
-
-## 📦 Features
-
-- Supports **1–6 scanners**, each with independent settings
-- Scans roots on a schedule with user-defined **intervals and resolutions**
-- Stores images with timestamped filenames in per-scanner folders
-- Web GUI to:
-  - Enable/disable scanners
-  - Assign labels
-  - Set scan frequency and resolution
-  - Choose connected scanner devices
-  - Start/stop the control service
-- Automatically rotates log files and manages local disk space
-- JSON-based configuration — no database required
-- Future expansion: image upload, AI root tracking
-
 
 ## 🧰 Project Structure
 ```
