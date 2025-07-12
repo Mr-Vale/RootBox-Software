@@ -14,10 +14,10 @@ bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/i
 4. Should perform a reboot before using
 
 ## Service Management Commands:
-
+```
 Check all running services:
 
-"  sudo systemctl status"
+  sudo systemctl status
 
 Check custom web hosting service:
 
@@ -34,7 +34,7 @@ Check custom scanner detect service:
 Restart custom scanner detect service:
 
   sudo systemctl restart rootbox-scanner-autodetect.service
-
+```
 
 ## 📦 Features
 
@@ -54,7 +54,7 @@ Restart custom scanner detect service:
 ---
 
 ## 🧰 Project Structure
-
+```
 ~/RootBox/
 ├── 00_scan_control.py # Main control loop
 ├── 01_scan_image.py # Scans an image from a specific scanner
@@ -71,3 +71,4 @@ Restart custom scanner detect service:
 ├── scan_images/ # Stores scan output
 │ └── scanner01/... # Images organized by scanner
 └── controller.pid # PID tracking for the control loop
+```
