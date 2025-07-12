@@ -7,10 +7,10 @@ RootBox is a Raspberry Pi–based automated root observation system designed to 
 
 1. Install full Desktop Raspberry PI OS (ensure SSH is enabled and connected to the internet)
 2. Login to PI with SSH
-3. Copy the complete next line and run it
-
+3. Copy the following command and run
+```
 bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/install.sh)
-
+```
 4. Should perform a reboot before using
 
 ## Service Management Commands:
