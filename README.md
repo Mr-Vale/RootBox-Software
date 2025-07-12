@@ -15,24 +15,25 @@ bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/i
 
 ## Service Management Commands:
 
-Check all running services
-sudo systemctl status
+Check all running services:
 
-Check custom web hosting service
+  sudo systemctl status
 
-sudo systemctl status rootbox-gunicorn.service
+Check custom web hosting service:
 
-Restart custom web hosting service
+  sudo systemctl status rootbox-gunicorn.service
 
-sudo systemctl restart rootbox-gunicorn.service
+Restart custom web hosting service:
 
-Check custom scanner detect service
+  sudo systemctl restart rootbox-gunicorn.service
 
-sudo systemctl status rootbox-scanner-autodetect.service
+Check custom scanner detect service:
 
-Restart custom scanner detect service
+  sudo systemctl status rootbox-scanner-autodetect.service
 
-sudo systemctl restart rootbox-scanner-autodetect.service
+Restart custom scanner detect service:
+
+  sudo systemctl restart rootbox-scanner-autodetect.service
 
 
 ## 📦 Features
