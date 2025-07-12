@@ -65,7 +65,7 @@ The installer automatically creates a shortcut on the Raspberry Pi desktop:
   ```
   xdg-open http://localhost:5000
   ```
-  
+---  
 
 ## 🔄 Service Management Commands
 
