@@ -70,7 +70,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-echo "✅ $GUNICORN_SERVICE.service created"
+echo "  ✅ $GUNICORN_SERVICE.service created"
 
 # Step 8: Set up systemd service for Scanner Autodetect
 AUTODETECT_FILE="/etc/systemd/system/$AUTODETECT_SERVICE.service"
@@ -92,7 +92,7 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
-echo "✅ $AUTODETECT_SERVICE.service created"
+echo "  ✅ $AUTODETECT_SERVICE.service created"
 
 # Step 9: Enable and start services
 print_section "🚀 Enabling and starting services..."
@@ -101,7 +101,8 @@ sudo systemctl enable "$GUNICORN_SERVICE"
 sudo systemctl restart "$GUNICORN_SERVICE"
 sudo systemctl enable "$AUTODETECT_SERVICE"
 sudo systemctl start "$AUTODETECT_SERVICE"
-echo "✅ Services enabled and running."
+
+echo "  ✅ Services enabled and running."
 
 # Step 10: Enable VNC
 print_section "🖥️ Setting up RealVNC..."
@@ -109,7 +110,7 @@ sudo systemctl enable vncserver-x11-serviced.service
 sudo systemctl start vncserver-x11-serviced.service
 sudo raspi-config nonint do_vnc 0
 
-echo "✅ VNC Server enabled. Use RealVNC Viewer to connect."
+echo "  ✅ VNC Server enabled. Use RealVNC Viewer to connect."
 
 # Step 11: Create desktop shortcut for RootBox Web GUI
 mkdir -p "$USER_HOME/Desktop"
@@ -129,7 +130,7 @@ EOF
 
 chmod +x "$DESKTOP_FILE"
 
-echo "✅ RootBox_GUI.desktop created"
+echo "  ✅ RootBox_GUI.desktop created"
 
 # Step 12: Final apt upgrade
 print_section "🔄 Running full system upgrade..."
