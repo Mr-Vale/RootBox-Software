@@ -32,7 +32,7 @@ Once installed either:
   ```
 OR
 
-- Use Real VNC viewer and log into <Raspberry Pi IP> Port 5900				
+- Use Real VNC viewer and log into "Raspberry-Pi-IP" Port 5900				
 
 OR
 
@@ -53,10 +53,6 @@ The installer automatically creates a shortcut on the Raspberry Pi desktop:
   ```
   xdg-open http://localhost:5000
   ```
-
-This makes it easy to access the GUI without typing anything.
-
-
 
 ## ⚙️ How to Install
 
