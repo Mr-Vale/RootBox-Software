@@ -3,7 +3,7 @@
 RootBox is a Raspberry Pi–based automated root observation system designed to scan and monitor plant root growth over time. It supports multiple USB flatbed scanners, provides a Flask-based web interface for control, and logs all activity for later analysis.
 
 ---
-How to Install:
+## How to Install:
 
 1. Install full Desktop Raspberry PI OS (ensure SSH is enabled and connected to the internet)
 2. Login to PI with SSH
@@ -13,23 +13,22 @@ bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/i
 
 4. Should perform a reboot before using
 
----
 ## Service Management Commands:
 
-Check all running services:
-  sudo systemctl status
+Check all running services
+sudo systemctl status
 
-Check custom web hosting service:
-  sudo systemctl status rootbox-gunicorn.service
+Check custom web hosting service
+sudo systemctl status rootbox-gunicorn.service
 
-Restart custom web hosting service:
-  sudo systemctl restart rootbox-gunicorn.service
+Restart custom web hosting service
+sudo systemctl restart rootbox-gunicorn.service
 
-Check custom scanner detect service:
-  sudo systemctl status rootbox-scanner-autodetect.service
+Check custom scanner detect service
+sudo systemctl status rootbox-scanner-autodetect.service
 
-Restart custom scanner detect service:
-  sudo systemctl restart rootbox-scanner-autodetect.service
+Restart custom scanner detect service
+sudo systemctl restart rootbox-scanner-autodetect.service
 
 ---
 
