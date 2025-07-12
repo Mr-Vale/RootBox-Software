@@ -17,7 +17,7 @@ bash <(curl -s https://raw.githubusercontent.com/Mr-Vale/RootBox-Software/main/i
 
 Check all running services:
 
-  sudo systemctl status
+"  sudo systemctl status"
 
 Check custom web hosting service:
 
