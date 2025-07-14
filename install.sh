@@ -24,6 +24,25 @@ sudo apt install -y git python3 python3-pip python3-venv python3-dev \
   sane-utils libsane-common libjpeg-dev build-essential \
   realvnc-vnc-server realvnc-vnc-viewer
 
+# ----------------------------
+# Install Network Logger (Dependency)
+# ----------------------------
+
+print_section "📡 Installing Network Logger..."
+
+# Clone the repo if not already present
+if [ ! -d "$HOME/Network_Logger" ]; then
+  git clone https://github.com/Mr-Vale/Network_Logger ~/Network_Logger
+fi
+
+# Run its install script
+bash ~/Network_Logger/Network_Logger_Install.sh
+if [ $? -ne 0 ]; then
+  echo "❌ Network Logger install failed. Aborting."
+  exit 1
+fi
+
+
 # Step 3: Clone repo
 if [ -d "$INSTALL_DIR" ]; then
   print_section "📁 RootBox directory already exists, skipping clone."
