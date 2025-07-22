@@ -1,7 +1,7 @@
 import sys
 import os
 import json
-import datetime
+import time
 import subprocess
 
 # Find user home and RootBox directory
@@ -42,15 +42,12 @@ def main():
     scanner_folder = os.path.join(SCAN_IMAGES_DIR, scanner_id)
     os.makedirs(scanner_folder, exist_ok=True)
 
-    # Timestamp for filename
-    timestamp = datetime.datetime.now().strftime("%d-%m-%Y-%H%M")
-
+    # Unix timestamp for filename
+    timestamp = int(time.time())
     filename = f"{scanner_id}-{label}-{timestamp}.png"
     filepath = os.path.join(scanner_folder, filename)
 
     # Build scan command
-    # Example using scanimage (must be installed, supports device selection)
-    # You may need to adjust options depending on your scanner and drivers.
     scan_cmd = [
         "scanimage",
         "-d", device,
