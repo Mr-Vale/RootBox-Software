@@ -60,6 +60,7 @@ fi
 source venv/bin/activate
 pip install --upgrade pip
 pip install flask gunicorn
+pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
 # Step 5: Create required folders
 mkdir -p "$INSTALL_DIR/logs"
