@@ -4,11 +4,18 @@ import json
 import re
 import os
 
-#Find user home path and create folder directory
+# Find user home path and create folder directory
 HOME_DIR = os.path.expanduser("~")
 ROOTBOX_DIR = os.path.join(HOME_DIR, "RootBox")
 
-OUTPUT_PATH = os.path.join(ROOTBOX_DIR,'web','scanner_devices.json')
+OUTPUT_PATH = os.path.join(ROOTBOX_DIR, 'web', 'scanner_devices.json')
+
+# -------------------------------
+# Filter Section (comment out to disable)
+# Only include devices that contain one of these keywords
+ENABLE_FILTER = True
+INCLUDE_KEYWORDS = ["pixma", "hp"]
+# -------------------------------
 
 def detect_scanners():
     try:
@@ -18,11 +25,16 @@ def detect_scanners():
             match = re.match(r"device `(.*?)'", line)
             if match:
                 devices.append(match.group(1))
-        if devices:
-           # return [devices[0]]  # Return only the first device as a single-item list
-           return devices         # Return all detected devices
-        else:
-            return []
+
+        # Apply filter if enabled
+        if ENABLE_FILTER and INCLUDE_KEYWORDS:
+            filtered = []
+            for d in devices:
+                if any(keyword.lower() in d.lower() for keyword in INCLUDE_KEYWORDS):
+                    filtered.append(d)
+            devices = filtered
+
+        return devices if devices else []
     except Exception as e:
         print(f"Error detecting scanners: {e}")
         return []
