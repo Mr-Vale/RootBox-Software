@@ -33,6 +33,12 @@ RootBox is a Raspberry Pi–based automated root observation system designed to 
 4. Wait for installation to complete
 5. Reboot the Pi before first use
 
+##  How to Update
+
+```bash
+bash update_repo.sh --repo https://github.com/Mr-Vale/RootBox-Software.git --workdir ~/RootBox
+```
+
 
 ## 🖥️ Accessing the Web GUI
 
