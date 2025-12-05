@@ -1,0 +1,209 @@
+# =============================================================================
+# Fire Danger Index Dashboard Card
+# =============================================================================
+# Copy this entire configuration to your Lovelace dashboard.
+#
+# REQUIREMENTS:
+# 1. ApexCharts Card installed via HACS
+#    (https://github.com/RomRider/apexcharts-card)
+# 2. fire_danger_index.yaml package configured and active
+#
+# TO ADD TO DASHBOARD:
+# 1. Edit your dashboard (click 3 dots → Edit Dashboard)
+# 2. Click "+ Add Card"
+# 3. Scroll down and click "Manual"
+# 4. Paste this entire configuration
+# 5. Click "Save"
+# =============================================================================
+
+type: vertical-stack
+cards:
+  # -------------------------------------------------------------------------
+  # Header Card - Current FDI value and controls
+  # -------------------------------------------------------------------------
+  - type: entities
+    title: 🔥 Fire Danger Index
+    show_header_toggle: false
+    entities:
+      - entity: sensor.fire_danger_index
+        name: Current FDI
+        secondary_info: attribute
+        attribute: rating
+      - entity: sensor.fire_danger_rating
+        name: Danger Level
+      - type: divider
+      - entity: input_number.fire_danger_drought_factor
+        name: Drought Factor (1-10)
+      - entity: input_number.fire_danger_threshold
+        name: Alert Threshold
+      - entity: input_boolean.fire_danger_notifications_enabled
+        name: Enable Notifications
+      - type: divider
+      - entity: input_select.fire_danger_graph_day
+        name: View Graph Day
+
+  # -------------------------------------------------------------------------
+  # FDI Color Legend
+  # -------------------------------------------------------------------------
+  - type: markdown
+    content: |
+      | Rating | FDI Range | Color |
+      |--------|-----------|-------|
+      | Low-Moderate | 0-11 | 🟢 |
+      | High | 12-24 | 🟡 |
+      | Very High | 25-49 | 🟠 |
+      | Severe | 50-74 | 🔴 |
+      | Extreme | 75-99 | 🟣 |
+      | Catastrophic | 100+ | ⚫ |
+
+  # -------------------------------------------------------------------------
+  # ApexCharts Graph - Fire Danger Index over time
+  # Shows data from 1am to 11:45pm with day navigation
+  # -------------------------------------------------------------------------
+  - type: custom:apexcharts-card
+    header:
+      show: true
+      title: Fire Danger Index - 24 Hour View
+      show_states: true
+      colorize_states: true
+    graph_span: 24h
+    span:
+      start: day
+      offset: |
+        [[[
+          if (states['input_select.fire_danger_graph_day'].state === 'Yesterday') {
+            return '-1d';
+          } else if (states['input_select.fire_danger_graph_day'].state === '2 Days Ago') {
+            return '-2d';
+          }
+          return '+0d';
+        ]]]
+    apex_config:
+      chart:
+        height: 350px
+        toolbar:
+          show: true
+          tools:
+            download: true
+            selection: true
+            zoom: true
+            zoomin: true
+            zoomout: true
+            pan: true
+            reset: true
+      grid:
+        show: true
+        borderColor: '#444'
+      xaxis:
+        labels:
+          datetimeFormatter:
+            hour: 'HH:mm'
+            day: 'dd MMM'
+        axisBorder:
+          show: true
+        axisTicks:
+          show: true
+      yaxis:
+        min: 0
+        forceNiceScale: true
+        tickAmount: 6
+        labels:
+          formatter: |
+            EVAL:function(val) {
+              return val.toFixed(0);
+            }
+      tooltip:
+        enabled: true
+        shared: true
+        x:
+          format: 'HH:mm dd/MM/yyyy'
+      annotations:
+        yaxis:
+          - y: 12
+            borderColor: '#FFEB3B'
+            strokeDashArray: 3
+            label:
+              text: 'High (12)'
+              position: 'left'
+              style:
+                background: '#FFEB3B'
+                color: '#000'
+          - y: 25
+            borderColor: '#FF9800'
+            strokeDashArray: 3
+            label:
+              text: 'Very High (25)'
+              position: 'left'
+              style:
+                background: '#FF9800'
+                color: '#000'
+          - y: 50
+            borderColor: '#F44336'
+            strokeDashArray: 3
+            label:
+              text: 'Severe (50)'
+              position: 'left'
+              style:
+                background: '#F44336'
+                color: '#fff'
+          - y: 75
+            borderColor: '#9C27B0'
+            strokeDashArray: 3
+            label:
+              text: 'Extreme (75)'
+              position: 'left'
+              style:
+                background: '#9C27B0'
+                color: '#fff'
+    series:
+      - entity: sensor.fire_danger_index
+        name: Fire Danger Index
+        type: area
+        color: '#FF5722'
+        opacity: 0.3
+        stroke_width: 2
+        fill_raw: last
+        extend_to: now
+        group_by:
+          func: max
+          duration: 15min
+        show:
+          legend_value: true
+          in_header: true
+          extremas: true
+
+  # -------------------------------------------------------------------------
+  # Current Weather Conditions from Ecowitt
+  # Update entity IDs to match your Ecowitt sensor names
+  # -------------------------------------------------------------------------
+  - type: glance
+    title: Current Weather Conditions
+    show_name: true
+    show_state: true
+    columns: 3
+    entities:
+      # UPDATE THESE ENTITY IDs TO MATCH YOUR ECOWITT SENSORS
+      - entity: sensor.ecowitt_temperature
+        name: Temperature
+        icon: mdi:thermometer
+      - entity: sensor.ecowitt_wind_speed
+        name: Wind Speed
+        icon: mdi:weather-windy
+      - entity: sensor.ecowitt_humidity
+        name: Humidity
+        icon: mdi:water-percent
+
+  # -------------------------------------------------------------------------
+  # Statistics Card - Min/Max/Average for today
+  # -------------------------------------------------------------------------
+  - type: statistics-graph
+    title: Fire Danger Index Statistics
+    entities:
+      - entity: sensor.fire_danger_index
+        name: FDI
+    stat_types:
+      - min
+      - max
+      - mean
+    days_to_show: 1
+    period: hour

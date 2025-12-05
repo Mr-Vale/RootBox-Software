@@ -1,0 +1,360 @@
+# =============================================================================
+# Fire Danger Index (FDI) Home Assistant Automation
+# =============================================================================
+# Based on the McArthur Forest Fire Danger Index (FFDI) Mark 5 formula
+# Used by CFA (Country Fire Authority) in Australia
+#
+# FORMULA: FFDI = 2 * exp(-0.45 + 0.987*ln(DF) + 0.0338*T + 0.0234*U - 0.0345*H)
+# Where:
+#   T  = Temperature (°C)
+#   U  = Wind speed (km/h)
+#   H  = Relative humidity (%)
+#   DF = Drought Factor (1-10, default 5 for moderate conditions)
+#
+# FFDI Ratings:
+#   0-11: Low-Moderate
+#   12-24: High
+#   25-49: Very High
+#   50-74: Severe
+#   75-99: Extreme
+#   100+: Catastrophic
+#
+# REQUIREMENTS:
+# - Ecowitt weather station configured in Home Assistant
+# - ApexCharts Card (install via HACS: https://github.com/RomRider/apexcharts-card)
+# - Replace sensor entity IDs with your actual Ecowitt sensor entities
+#
+# SETUP INSTRUCTIONS:
+# 1. Copy this file to your Home Assistant config directory
+# 2. Add to configuration.yaml: 
+#      homeassistant:
+#        packages:
+#          fire_danger: !include fire_danger_index.yaml
+# 3. Update the sensor entity IDs to match your Ecowitt sensors
+# 4. Restart Home Assistant
+# 5. Add the dashboard card to your Lovelace UI
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# INPUT HELPERS - User configurable settings
+# -----------------------------------------------------------------------------
+input_number:
+  fire_danger_threshold:
+    name: Fire Danger Alert Threshold
+    min: 1
+    max: 150
+    step: 1
+    initial: 50
+    unit_of_measurement: "FDI"
+    icon: mdi:fire-alert
+    mode: slider
+
+  fire_danger_drought_factor:
+    name: Drought Factor
+    min: 1
+    max: 10
+    step: 0.5
+    initial: 5
+    unit_of_measurement: ""
+    icon: mdi:water-percent
+    mode: slider
+
+input_boolean:
+  fire_danger_notifications_enabled:
+    name: Fire Danger Notifications
+    initial: false
+    icon: mdi:bell-alert
+
+input_select:
+  fire_danger_graph_day:
+    name: Fire Danger Graph Day
+    options:
+      - "Today"
+      - "Yesterday"
+      - "2 Days Ago"
+    initial: "Today"
+    icon: mdi:calendar
+
+# -----------------------------------------------------------------------------
+# TEMPLATE SENSORS - Fire Danger Index calculation
+# -----------------------------------------------------------------------------
+template:
+  - sensor:
+      # Main Fire Danger Index sensor
+      - name: "Fire Danger Index"
+        unique_id: fire_danger_index
+        unit_of_measurement: "FDI"
+        icon: mdi:fire
+        state_class: measurement
+        state: >
+          {# ===================================================================
+             IMPORTANT: Update these entity IDs to match your Ecowitt sensors!
+             Common Ecowitt sensor patterns:
+             - sensor.ecowitt_temperature or sensor.gw1000_temperature
+             - sensor.ecowitt_wind_speed or sensor.gw1000_wind_speed  
+             - sensor.ecowitt_humidity or sensor.gw1000_humidity
+          =================================================================== #}
+          {% set temp = states('sensor.ecowitt_temperature') | float(0) %}
+          {% set wind = states('sensor.ecowitt_wind_speed') | float(0) %}
+          {% set humidity = states('sensor.ecowitt_humidity') | float(50) %}
+          {% set drought_factor = states('input_number.fire_danger_drought_factor') | float(5) %}
+          
+          {# Validate inputs #}
+          {% if temp == 0 and wind == 0 %}
+            {{ 0 }}
+          {% else %}
+            {# Ensure drought factor is at least 1 for logarithm #}
+            {% set df = [drought_factor, 1] | max %}
+            
+            {# McArthur FFDI Mark 5 Formula #}
+            {% set ln_df = log(df) %}
+            {% set exponent = -0.45 + 0.987 * ln_df + 0.0338 * temp + 0.0234 * wind - 0.0345 * humidity %}
+            {% set fdi = 2 * e ** exponent %}
+            
+            {# Round to 1 decimal place, minimum 0 #}
+            {{ [fdi | round(1), 0] | max }}
+          {% endif %}
+        attributes:
+          rating: >
+            {% set fdi = this.state | float(0) %}
+            {% if fdi < 12 %}
+              Low-Moderate
+            {% elif fdi < 25 %}
+              High
+            {% elif fdi < 50 %}
+              Very High
+            {% elif fdi < 75 %}
+              Severe
+            {% elif fdi < 100 %}
+              Extreme
+            {% else %}
+              Catastrophic
+            {% endif %}
+          rating_color: >
+            {% set fdi = this.state | float(0) %}
+            {% if fdi < 12 %}
+              #4CAF50
+            {% elif fdi < 25 %}
+              #FFEB3B
+            {% elif fdi < 50 %}
+              #FF9800
+            {% elif fdi < 75 %}
+              #F44336
+            {% elif fdi < 100 %}
+              #9C27B0
+            {% else %}
+              #000000
+            {% endif %}
+          temperature: "{{ states('sensor.ecowitt_temperature') }}"
+          wind_speed: "{{ states('sensor.ecowitt_wind_speed') }}"
+          humidity: "{{ states('sensor.ecowitt_humidity') }}"
+          drought_factor: "{{ states('input_number.fire_danger_drought_factor') }}"
+          last_updated: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+
+      # Helper sensor to display the current danger rating as text
+      - name: "Fire Danger Rating"
+        unique_id: fire_danger_rating
+        icon: mdi:fire-alert
+        state: "{{ state_attr('sensor.fire_danger_index', 'rating') }}"
+
+# -----------------------------------------------------------------------------
+# AUTOMATION - Update Fire Danger Index every 15 minutes
+# -----------------------------------------------------------------------------
+automation:
+  - id: fire_danger_index_update
+    alias: "Fire Danger Index - Update Every 15 Minutes"
+    description: "Updates the Fire Danger Index calculation every 15 minutes"
+    mode: single
+    trigger:
+      # Run every 15 minutes
+      - platform: time_pattern
+        minutes: "/15"
+      # Also run at startup
+      - platform: homeassistant
+        event: start
+    condition:
+      # Only calculate between 1:00 AM and 11:45 PM
+      - condition: time
+        after: "01:00:00"
+        before: "23:45:00"
+    action:
+      # Force template sensor to recalculate by touching the drought factor
+      - service: homeassistant.update_entity
+        target:
+          entity_id: sensor.fire_danger_index
+
+  - id: fire_danger_alert
+    alias: "Fire Danger Index - High Danger Alert"
+    description: "Sends notification when Fire Danger Index exceeds threshold"
+    mode: single
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.fire_danger_index
+        above: input_number.fire_danger_threshold
+    condition:
+      # Only send if notifications are enabled
+      - condition: state
+        entity_id: input_boolean.fire_danger_notifications_enabled
+        state: "on"
+    action:
+      # Placeholder for push notifications - disabled by default
+      # Uncomment and configure when push notifications are set up
+      # - service: notify.mobile_app_your_phone
+      #   data:
+      #     title: "🔥 Fire Danger Alert"
+      #     message: >
+      #       Fire Danger Index has reached {{ states('sensor.fire_danger_index') }} 
+      #       ({{ state_attr('sensor.fire_danger_index', 'rating') }}).
+      #       Threshold: {{ states('input_number.fire_danger_threshold') }}
+      #     data:
+      #       priority: high
+      #       ttl: 0
+      - service: persistent_notification.create
+        data:
+          title: "🔥 Fire Danger Alert"
+          message: >
+            Fire Danger Index has reached {{ states('sensor.fire_danger_index') }} 
+            ({{ state_attr('sensor.fire_danger_index', 'rating') }}).
+            Current conditions:
+            - Temperature: {{ state_attr('sensor.fire_danger_index', 'temperature') }}°C
+            - Wind Speed: {{ state_attr('sensor.fire_danger_index', 'wind_speed') }} km/h  
+            - Humidity: {{ state_attr('sensor.fire_danger_index', 'humidity') }}%
+            - Drought Factor: {{ state_attr('sensor.fire_danger_index', 'drought_factor') }}
+          notification_id: fire_danger_alert
+
+# -----------------------------------------------------------------------------
+# RECORDER - Configure data retention (3 days for FDI data)
+# -----------------------------------------------------------------------------
+recorder:
+  purge_keep_days: 3
+  include:
+    entities:
+      - sensor.fire_danger_index
+      - sensor.fire_danger_rating
+      - input_number.fire_danger_threshold
+      - input_number.fire_danger_drought_factor
+
+# =============================================================================
+# DASHBOARD CARD CONFIGURATION
+# =============================================================================
+# Add this card to your Lovelace dashboard.
+# Requires: ApexCharts Card (install via HACS)
+#
+# To add to your dashboard:
+# 1. Edit your dashboard
+# 2. Add a new card
+# 3. Choose "Manual" or "Custom: ApexCharts Card"
+# 4. Paste the YAML below
+# =============================================================================
+#
+# type: vertical-stack
+# cards:
+#   # Header with current FDI and controls
+#   - type: entities
+#     title: 🔥 Fire Danger Index
+#     show_header_toggle: false
+#     entities:
+#       - entity: sensor.fire_danger_index
+#         name: Current FDI
+#         secondary_info: attribute
+#         attribute: rating
+#       - entity: sensor.fire_danger_rating
+#         name: Danger Level
+#       - type: divider
+#       - entity: input_number.fire_danger_drought_factor
+#         name: Drought Factor
+#       - entity: input_number.fire_danger_threshold
+#         name: Alert Threshold
+#       - entity: input_boolean.fire_danger_notifications_enabled
+#         name: Enable Notifications
+#       - type: divider
+#       - entity: input_select.fire_danger_graph_day
+#         name: View Graph Day
+#
+#   # ApexCharts graph showing FDI over time
+#   - type: custom:apexcharts-card
+#     header:
+#       show: true
+#       title: Fire Danger Index Graph
+#       show_states: true
+#       colorize_states: true
+#     graph_span: 24h
+#     span:
+#       start: day
+#       offset: >
+#         {% if is_state('input_select.fire_danger_graph_day', 'Yesterday') %}
+#           -1d
+#         {% elif is_state('input_select.fire_danger_graph_day', '2 Days Ago') %}
+#           -2d
+#         {% else %}
+#           +0d
+#         {% endif %}
+#     apex_config:
+#       chart:
+#         height: 300px
+#       xaxis:
+#         min: "{{ today_at('01:00').timestamp() * 1000 }}"
+#         max: "{{ today_at('23:45').timestamp() * 1000 }}"
+#         labels:
+#           datetimeFormatter:
+#             hour: HH:mm
+#       yaxis:
+#         min: 0
+#         tickAmount: 5
+#       annotations:
+#         yaxis:
+#           - y: 12
+#             borderColor: '#FFEB3B'
+#             label:
+#               text: 'High'
+#               style:
+#                 background: '#FFEB3B'
+#           - y: 25
+#             borderColor: '#FF9800'
+#             label:
+#               text: 'Very High'
+#               style:
+#                 background: '#FF9800'
+#           - y: 50
+#             borderColor: '#F44336'
+#             label:
+#               text: 'Severe'
+#               style:
+#                 background: '#F44336'
+#           - y: 75
+#             borderColor: '#9C27B0'
+#             label:
+#               text: 'Extreme'
+#               style:
+#                 background: '#9C27B0'
+#     series:
+#       - entity: sensor.fire_danger_index
+#         name: Fire Danger Index
+#         type: area
+#         color: '#FF5722'
+#         stroke_width: 2
+#         fill_raw: last
+#         extend_to: now
+#         group_by:
+#           func: max
+#           duration: 15min
+#
+#   # Conditions breakdown card
+#   - type: glance
+#     title: Current Weather Conditions
+#     show_name: true
+#     show_state: true
+#     entities:
+#       - entity: sensor.ecowitt_temperature
+#         name: Temperature
+#         icon: mdi:thermometer
+#       - entity: sensor.ecowitt_wind_speed
+#         name: Wind Speed
+#         icon: mdi:weather-windy
+#       - entity: sensor.ecowitt_humidity
+#         name: Humidity
+#         icon: mdi:water-percent
+#
+# =============================================================================
+# END DASHBOARD CONFIGURATION
+# =============================================================================

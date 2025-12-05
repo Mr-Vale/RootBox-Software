@@ -124,4 +124,24 @@ sudo systemctl restart rootbox-scanner-autodetect.service
 │   └── scanner01/..scanner06/  # Output image folders
 └── controller.pid              # Tracks control script PID
 ```
+
+---
+
+## 🔥 Home Assistant Fire Danger Index
+
+This repository also includes a **Home Assistant automation package** for calculating and graphing the Fire Danger Index (FDI) based on the **McArthur FFDI Mark 5** formula used by the CFA (Country Fire Authority) in Australia.
+
+### Features
+
+- Calculates FDI using temperature, wind speed, humidity, and drought factor from an Ecowitt weather station
+- Updates every 15 minutes between 1:00 AM and 11:45 PM
+- Interactive ApexCharts graph with danger level annotations
+- View today, yesterday, or 2 days ago with easy navigation
+- Configurable alert threshold with notifications (disabled by default)
+- 3-day data retention for review
+
+### Quick Start
+
+See the [`homeassistant/README.md`](homeassistant/README.md) for full installation instructions.
+
 ---
