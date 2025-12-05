@@ -223,16 +223,23 @@ automation:
           notification_id: fire_danger_alert
 
 # -----------------------------------------------------------------------------
-# RECORDER - Configure data retention (3 days for FDI data)
+# RECORDER - Note about data retention
 # -----------------------------------------------------------------------------
-recorder:
-  purge_keep_days: 3
-  include:
-    entities:
-      - sensor.fire_danger_index
-      - sensor.fire_danger_rating
-      - input_number.fire_danger_threshold
-      - input_number.fire_danger_drought_factor
+# NOTE: This package does NOT override your main recorder configuration.
+# 
+# To ensure 3 days of FDI history is kept, add these entities to your
+# main recorder configuration in configuration.yaml:
+#
+# recorder:
+#   purge_keep_days: 3  # or higher if you want more history
+#   include:
+#     entities:
+#       - sensor.fire_danger_index
+#       - sensor.fire_danger_rating
+#
+# If you already have a recorder configuration, just add the sensor entities
+# to your existing include list. The default Home Assistant recorder keeps
+# 10 days of history, which is sufficient for this package.
 
 # =============================================================================
 # DASHBOARD CARD CONFIGURATION

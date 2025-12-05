@@ -158,8 +158,9 @@ When your push notifications are set up, edit the automation in `fire_danger_ind
 - Verify the recorder is tracking the sensor
 
 ### History not keeping 3 days
-- The recorder `purge_keep_days: 3` setting may conflict with your main recorder config
-- You may need to add the sensor to your main recorder include list
+- The default Home Assistant recorder keeps 10 days of history, which is sufficient
+- If you've customized your recorder, add `sensor.fire_danger_index` to your include list
+- Ensure your recorder's `purge_keep_days` is at least 3
 
 ## 📁 File Structure
 
